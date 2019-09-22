@@ -1,0 +1,4 @@
+{
+    "python.pythonPath": "env/bin/python",
+    "python.linting.pylintPath": "/home/sayem/Projects/Rest-api-django/env/bin/pylint"
+}

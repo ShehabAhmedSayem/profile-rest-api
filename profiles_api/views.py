@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
-from rest_framework.response import Response    
+from rest_framework.response import Response
 from rest_framework import status
+from rest_framework import viewsets
 
 from profiles_api import serializers
 
@@ -19,7 +20,7 @@ class HelloApiView(APIView):
         ]
 
         return Response({'message': 'Hello!', 'an_apiview': an_apiview})
-    
+
     def post(self, request):
         """Create hello message with our name"""
         serializers = self.serializer_class(data=request.data)
@@ -29,7 +30,10 @@ class HelloApiView(APIView):
             message = f'Hello {name}'
             return Response({'message': message})
         else:
-            return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                serializers.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
     def put(self, request, pk=None):
         """Handle updating an object"""
@@ -40,5 +44,50 @@ class HelloApiView(APIView):
         return Response({'method': 'PATCH'})
 
     def delete(self, request, pk=None):
+        """Delete an object"""
+        return Response({'method': 'DELETE'})
+
+
+class HelloViewSet(viewsets.ViewSet):
+    """Test ViewSet"""
+    serializer_class = serializers.HelloSerializer
+
+    def list(self, request):
+        """Return a hello message"""
+        a_viewset = [
+            'Uses actions (list, create, retrieve, update, partial_update, destroy)',
+            'Automatically maps to URLs using Routers',
+            'More functionality with less code',
+        ]
+        return Response({'message': 'Hello!', 'a_viewset': a_viewset})
+
+    def create(self, request):
+        """Create a new object"""
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            name = serializer.validated_data.get('name')
+            age = serializer.validated_data.get('age')
+            message = f'Hello {name}. You are {age} years old!'
+            return Response({'message': message})
+        else:
+            return Response(
+                serializer.errors, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+    
+    def retrieve(self, request, pk=None):
+        """Handle getting an object by its pk"""
+        return Response({'method': 'GET'})
+    
+    def update(self, request, pk=None):
+        """Handle updating an object"""
+        return Response({'method': 'PUT'})
+
+    def partial_update(self, request, pk=None):
+        """Handle a partial update of an object"""
+        return Response({'method': 'PATCH'})
+
+    def destroy(self, request, pk=None):
         """Delete an object"""
         return Response({'method': 'DELETE'})
